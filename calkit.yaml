@@ -3,9 +3,37 @@ name: asteroids-atlas-of-space
 title: Asteroids atlas of space
 description: A fork of Eleanor Lutz's project.
 git_repo_url: https://github.com/petebachant/asteroids_atlas_of_space
+dependencies:
+  - USER_FULL_NAME:
+      kind: env-var
+      notes: Used to scrape data.
+  - USER_LOCATION:
+      kind: env-var
+      notes: Used to scrape data.
 environments:
   main:
     kind: uv-venv
     path: requirements.txt
     prefix: .venv
     python: "3.8"
+pipeline:
+  stages:
+    split-query-datasets:
+      kind: jupyter-notebook
+      notebook_path: 1_split_query_datasets.ipynb
+    merge-tno-diameter-data:
+      kind: jupyter-notebook
+      notebook_path: 2_merge_TNO_diameter_data.ipynb
+    fetch-data:
+      kind: jupyter-notebook
+      notebook_path: 3_fetch_data.ipynb
+    make-figure-components:
+      kind: jupyter-notebook
+      notebook_path: 4_log_scale_plotting.ipynb
+    assemble-figure-components:
+      kind: manual-step
+      command: gimp ...
+      summary: Assemble the figures...
+      inputs: []
+      outputs:
+        - figures/map-complete.png
